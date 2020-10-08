@@ -1,95 +1,119 @@
 SECTION .data
-msg db 'VigenereCipher',0xa // создаю строку	
-lenm equ $ - msg // записываю длину строки
-key db 'vine' //создаю ключ
-lenk equ $ - key //записываю длину ключа
-newLine db 0xa // создаю пустую строку
+msg db '{ILoveSLEEP=andEat}',0xa
+lenm equ $ - msg
+key db 'vine'
+lenk equ $ - key
+newLine db 0xa
 
 SECTION .bss
-array resb lenm // создаю массив длины строки
+array resb lenm
 
 SECTION .text
 global _start
+
 _start:
+    mov ecx,(lenm - 1)
+    mov ebx,key
+    mov ebp,lenk
+    mov esi,msg
+    mov edi,array 
 
-mov ecx,lenm  // запись в регистры наших данных
-mov ebx,key   // запись в регистры наших данных
-mov ebp,lenk  // запись в регистры наших данных
+;посимвольная обработка шифруемого текста
+.letter:
+    mov dl,[esi] 
+    cmp dl,'z' ;если символ не является буквой
+    ja .save_notletter 
 
-mov esi,msg   //запись строки в регистр
-mov edi,array //запись массива в регистр
+    cmp dl,'a' ;если символ-заглавная буква
+    jb .capital 
 
-.cycle:       //начало цикла
-mov dl,[esi]  //записываем адрес нашей строки
-cmp dl,'z'    // сравниваем с буквой z 
-ja .z         //проверка	
-cmp dl,'a'    //на 
-jb .h  	      //букву
-sub dl,'a'    //отнимаем код буквы а	
-add dl,[ebx]  //складываем с нашим ключом 
-cmp dl,'z'    //сравниваем с z
-ja .b	      //если ушли за алфавит то на метку b
-;call function //вызов функции
-jmp .z	      // прыгаем на метку z
-.b:
-sub dl,'z'    // отнимаем код буквы z	
-add dl,'a'    // прибавляем код буквы а
-sub dl,1      // отнимаем 1 
-;call function //вызов функции
-jmp .z		// прыгаем на метку  z
-.h:
-cmp dl,'Z'	//проверка	
-ja .x		//на 
-cmp dl,'A'	//большие 
-jb .l		//буквы
-add dl,byte 20	// добавляем 20 байт
-sub dl,'a'	// отнимаем код a
-add dl,[ebx]	//складываем с нашим ключом, со знач. в адресе
-cmp dl,'z'	//сравниваем с z
-ja .c		//если вышли за алфавит
-sub dl,byte 20	//отнимаем 20 байт
-;call function	//вызов функции
-jmp .z		// прыгаем на метку z
-.c:
-sub dl,'z'	// отнимаем код буквы z	
-add dl,'a'	// прибавляем код буквы а
-sub dl,1	// отнимаем 1 
-;call function	//вызов функции
+    call encrypt
+    jmp .save
 
-.l:
-.x:
-.z:
-mov [edi],dl	//запись в массив
-xor dl,dl	//обнуление dl
-inc esi		//увеличиваем счетчик на 1 строки
-inc edi		//увеличиваем счетчик на 1 массива
-call function	//вызов функции
-loop .cycle	//повторяем цикл
+    .capital: 
+        cmp dl,'Z' ;если символ не явл.буквой
+        ja .save_notletter
 
-mov eax,4	//вывод на экран 
-mov ebx,1
-mov ecx,array
-mov edx,lenm
-int 80h
-call new	//вызов функции new
+        cmp dl,'A'
+        jb .save_notletter
+        
+        add dl,20h ;A-Z -> a-z
+        call encrypt
+        sub dl,20h ;a-z -> A-Z
+        jmp .save
 
-mov eax,1
-xor ebx,ebx
-int 80h
+    .save_notletter:
+        mov [edi],dl
+        xor dl,dl
+        inc esi ;"переключаемся" на следующую букву текста
+        inc edi 
+        loop .letter
+        jmp .output
 
-new:
-mov eax, 4	//вывод строки 
-mov ebx, 1
-mov ecx, newLine
-mov edx, 1
-int 80h
-ret
-function:
-dec ebp		//уменьшаем на 1 длину ключа 
-jnz .n		//если не равно то на метку n 
-mov ebp,lenk	//записываем длину ключа	
-mov ebx,key	//записываем сам ключ
-ret
-.n:
-inc ebx	//увеличиваем на 1 ключ
-ret
+    .save:
+        mov [edi],dl
+        xor dl,dl
+        inc esi ;"переключаемся" на следующую букву текста
+        inc edi 
+        call get_letter_key
+        loop .letter
+        jmp .output
+        
+    .output:
+        mov eax,4
+        mov ebx,1
+        mov ecx,array
+        mov edx,lenm
+        int 80h
+
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, newLine
+        mov edx, 1
+        int 80h
+
+        mov eax,1
+        xor ebx,ebx
+        int 80h
+        ret
+
+;функция encrypt выполняет алгоритм шифра Виженера:
+;буква шифртекста = (буква текста + буква шифра)%26
+;
+;условие входа:
+;(1) символ буквы текста в dl
+;(2) ключ шифрования в ebx
+encrypt:
+    sub dl,'a' 
+    add dl,[ebx]
+
+    cmp dl,'z'
+    ja .make_letter
+    ret
+
+    ;обработка по mod 26
+    .make_letter:
+        sub dl,'z'
+        add dl,'a'
+        sub dl,1
+        ret
+
+;функция get_letter_key переключает значение буквы ключа
+;
+;условие входа:
+;(1) текущая длина ключа в ebp
+;(2) ключ в ebx
+;
+;условие выхода:
+;(1) длина ключа > 0
+;(2) ebx != 0
+get_letter_key:
+    dec ebp 
+    jnz .update_key
+    mov ebp,lenk 
+    mov ebx,key
+    ret
+
+    .update_key:
+        inc ebx 
+        ret
