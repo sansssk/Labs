@@ -1,16 +1,16 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-char* encrypt(char* message, char* key) // функция, которая зашивровывает сообщение
+char* encrypt(char* message, char* key) // С„СѓРЅРєС†РёСЏ, РєРѕС‚РѕСЂР°СЏ Р·Р°С€РёРІСЂРѕРІС‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ
 {
-    int msglen = strlen(message); //strlen  функция,которая высчитывает длину сообщения
+    int msglen = strlen(message); //strlen  С„СѓРЅРєС†РёСЏ,РєРѕС‚РѕСЂР°СЏ РІС‹СЃС‡РёС‚С‹РІР°РµС‚ РґР»РёРЅСѓ СЃРѕРѕР±С‰РµРЅРёСЏ
     int keylen = strlen(key);
 
-    char* encrypted_text = malloc(sizeof(char) * msglen);   //создаем динамический массив для зашифрованного сообщения
+    char* encrypted_text = malloc(sizeof(char) * msglen);   //СЃРѕР·РґР°РµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РґР»СЏ Р·Р°С€РёС„СЂРѕРІР°РЅРЅРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
     int lin = 0;
-    for (int pos = 0; pos < msglen; pos++, lin++)  // берем позицию равную 0->
+    for (int pos = 0; pos < msglen; pos++, lin++)  // Р±РµСЂРµРј РїРѕР·РёС†РёСЋ СЂР°РІРЅСѓСЋ 0->
     {
         if (lin == keylen) lin = 0;
 
@@ -29,17 +29,17 @@ char* encrypt(char* message, char* key) // функция, которая зашивровывает сообще
         encrypted_text[pos] = ((ted + kl) % 26) + a;
     }
 
-    return encrypted_text;  // возврат динамического массива
+    return encrypted_text;  // РІРѕР·РІСЂР°С‚ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР°
 }
 
-char* vigenere_decryption(char* encrypted_text, char* key)        // функция, которая расшивровывает сообщение
+char* vigenere_decryption(char* encrypted_text, char* key)        // С„СѓРЅРєС†РёСЏ, РєРѕС‚РѕСЂР°СЏ СЂР°СЃС€РёРІСЂРѕРІС‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ
 {
-    int msglen = strlen(encrypted_text); // strlen  функция,которая высчитывает длину зашифрованнаого сообщения
+    int msglen = strlen(encrypted_text); // strlen  С„СѓРЅРєС†РёСЏ,РєРѕС‚РѕСЂР°СЏ РІС‹СЃС‡РёС‚С‹РІР°РµС‚ РґР»РёРЅСѓ Р·Р°С€РёС„СЂРѕРІР°РЅРЅР°РѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
     int keylen = strlen(key);
 
-    char* decrypted_text = malloc(sizeof(char) * msglen);   //создаем динамический массив для расшифрованного сообщения
+    char* decrypted_text = malloc(sizeof(char) * msglen);   //СЃРѕР·РґР°РµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РґР»СЏ СЂР°СЃС€РёС„СЂРѕРІР°РЅРЅРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
     int lin = 0;
-    for (int pos = 0; pos < msglen; pos++, lin++)         // берем позицию равную 0->
+    for (int pos = 0; pos < msglen; pos++, lin++)         // Р±РµСЂРµРј РїРѕР·РёС†РёСЋ СЂР°РІРЅСѓСЋ 0->
     {
         if (lin == keylen) lin = 0;
 
@@ -58,15 +58,15 @@ char* vigenere_decryption(char* encrypted_text, char* key)        // функция, ко
         decrypted_text[pos] = ((ted + 26 - kl) % 26) + a;
     }
 
-    return decrypted_text;     // возврат динамического массива
+    return decrypted_text;     // РІРѕР·РІСЂР°С‚ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР°
 };
 
-char* decrypt(char* encrypted_text) // функция, которая расшивровывает сообщение
+char* decrypt(char* encrypted_text) // С„СѓРЅРєС†РёСЏ, РєРѕС‚РѕСЂР°СЏ СЂР°СЃС€РёРІСЂРѕРІС‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ
 {
     char* decrypted_text;
-    char key[5];                //длина ключа равна 5
-    key[5] = '\0';                // для функции strlen
-    for (int i1 = 97; i1 < 123; i1++)         // цикл в цикле....
+    char key[5];                //РґР»РёРЅР° РєР»СЋС‡Р° СЂР°РІРЅР° 5
+    key[5] = '\0';                // РґР»СЏ С„СѓРЅРєС†РёРё strlen
+    for (int i1 = 97; i1 < 123; i1++)         // С†РёРєР» РІ С†РёРєР»Рµ....
     {
         key[0] = i1;
         for (int i2 = 97; i2 < 123; i2++)
@@ -81,7 +81,7 @@ char* decrypt(char* encrypted_text) // функция, которая расшивровывает сообщение
                     for (int i5 = 97; i5 < 123; i5++)
                     {
                         key[4] = i5;
-                        decrypted_text = vigenere_decryption(encrypted_text, key);   // создаем новый массив, который получен расшивровкой
+                        decrypted_text = vigenere_decryption(encrypted_text, key);   // СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ РјР°СЃСЃРёРІ, РєРѕС‚РѕСЂС‹Р№ РїРѕР»СѓС‡РµРЅ СЂР°СЃС€РёРІСЂРѕРІРєРѕР№
                         char* str = strstr(decrypted_text, " flag ");
 
                         if (str)
