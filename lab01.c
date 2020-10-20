@@ -114,6 +114,8 @@ int main()
     free(key);
 
     char* decrypted_text = decrypt(encrypted_text);
+    free(decrypted_text);
+    free(encrypted_text);
 
     return 0;
 }
