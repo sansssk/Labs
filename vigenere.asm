@@ -43,18 +43,12 @@ _start:
         jmp .save
 
     .save_notletter:
-        mov [edi],dl
-        xor dl,dl
-        inc esi ;"переключаемся" на следующую букву текста
-        inc edi 
+        call get_letter_text
         loop .letter
         jmp .output
 
     .save:
-        mov [edi],dl
-        xor dl,dl
-        inc esi ;"переключаемся" на следующую букву текста
-        inc edi 
+        call get_letter_text
         call get_letter_key
         loop .letter
         jmp .output
@@ -97,6 +91,19 @@ encrypt:
         add dl,'a'
         sub dl,1
         ret
+
+;функция get_letter_text переключает значение буквы текста
+;
+;условие входа:
+;(1) результат прошлого шифрования в dl
+;(2) текст в esi
+;(3) шифртекст в edi
+get_letter_text:
+    mov [edi],dl
+    xor dl,dl
+    inc esi 
+    inc edi 
+    ret
 
 ;функция get_letter_key переключает значение буквы ключа
 ;
