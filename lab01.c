@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -61,7 +61,7 @@ char* vigenere_decryption(char* encrypted_text, char* key)        // функц�
     return decrypted_text;     // возврат динамического массива
 };
 
-char* decrypt(char* encrypted_text) // функция, которая расшивровывает сообщение
+void decrypt(char* encrypted_text) // функция, которая расшивровывает сообщение
 {
     char* decrypted_text;
     char key[5];                //длина ключа равна 5
@@ -82,19 +82,18 @@ char* decrypt(char* encrypted_text) // функция, которая расши
                     {
                         key[4] = i5;
                         decrypted_text = vigenere_decryption(encrypted_text, key);   // создаем новый массив, который получен расшивровкой
-                        char* str = strstr(decrypted_text, " flag ");
+                        char* str = strstr(decrypted_text, "flag");
 
                         if (str)
                         {
                             printf("Key: %s\nPhrase: %s\n", key, decrypted_text);
                         }
+                        free(decrypted_text);
                     }
                 }
             }
         }
     }
-
-    return decrypted_text;
 }
 
 int main()
@@ -109,12 +108,11 @@ int main()
     printf("key len --> %d\n\n", strlen(key));
 
     char* encrypted_text = encrypt(message, key);
-    printf("Phrase: %s\n", encrypted_text);
     free(message);
     free(key);
+    printf("Phrase: %s\n", encrypted_text);
 
-    char* decrypted_text = decrypt(encrypted_text);
-    free(decrypted_text);
+    decrypt(encrypted_text);
     free(encrypted_text);
 
     return 0;
