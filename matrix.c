@@ -26,9 +26,26 @@ void print_matrix(int** mat, int size)
 int** create_matrix(int m, int n)
 {
     int** mat = calloc(sizeof(int*), m);
+    if (mat == NULL)
+    {
+        fprintf(stderr, "Can't allocate memory for matrix. Returning NULL.");
+        return NULL;
+    }
+
     for (int i = 0; i < m; i++)
     {
         mat[i] = calloc(sizeof(int), n);
+
+        if (mat[i] == NULL)
+        {
+            fprintf(stderr, "Can't allocate memory for matrix. Returning NULL.");
+            for (int j = 0; j < i; j++)
+            {
+                free(mat[j]);
+            }
+            free(mat);
+            return NULL;
+        }
     }
     return mat;
 }

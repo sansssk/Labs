@@ -25,6 +25,10 @@ int main() {
     scanf("%d", &size);
 
     int** mat = create_matrix(size, size);
+    if (mat == NULL)
+    {
+        return -1;
+    }
     
     fill_matrix(mat, size);
     print_matrix(mat,size);
